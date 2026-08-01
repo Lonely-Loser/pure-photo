@@ -16,7 +16,7 @@ def main():
     viewer.toggle_fullscreen()
 
     with open("resources/styles/dark.css", encoding="utf-8") as f:
-        viewer.setStyleSheet(f.read())
+        app.setStyleSheet(f.read())
 
     sys.exit(app.exec())
 

@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
 )
 
-from pure_photo.image_container import ImageContainer
+from image_container import ImageContainer
 from title_bar import TitleBar
 
 
@@ -99,7 +99,6 @@ class PhotoViewer(QMainWindow):
             self.current_file = filename
             file_name = Path(filename).name
             self.setWindowTitle(f"{file_name} - Pure Photo")
-            # self.statusBar().showMessage(filename)
             self.imageContainer.fit_image()
 
     # ------------------------------------------------------------------
@@ -111,12 +110,12 @@ class PhotoViewer(QMainWindow):
             self.showMaximized()
             self.titleBar.show()
             self.imageContainer.show_toolbar()
-            # self.statusBar().show()
+            self.imageContainer.show_image_info_bar()
         else:
             self.showFullScreen()
             self.titleBar.hide()
             self.imageContainer.hide_toolbar()
-            # self.statusBar().hide()
+            self.imageContainer.hide_image_info_bar()
 
         self.is_fullscreen = not self.is_fullscreen
 
@@ -138,22 +137,34 @@ class PhotoViewer(QMainWindow):
     # Hover Event
     # ------------------------------------------------------------------
 
-    def _show_bars(self):
+    def _show_tool_bar(self):
         self.imageContainer.show_toolbar()
-        # self.statusBar().show()
+        # self.imageContainer.show_image_info_bar()
 
-    def _hide_bars(self):
+    def _hide_tool_bar(self):
         self.imageContainer.hide_toolbar()
-        # self.statusBar().hide()
+        # self.imageContainer.hide_image_info_bar()
+
+    def _show_info_bar(self):
+        self.imageContainer.show_image_info_bar()
+
+    def _hide_info_bar(self):
+        self.imageContainer.hide_image_info_bar()
 
     def eventFilter(self, obj, event):
         if self.is_fullscreen:
             if event.type() == QEvent.Type.MouseMove:
                 pos = QCursor.pos()
                 top = self.geometry().top()
+                bottom = self.geometry().bottom()
                 if pos.y() <= top + 5:
-                    self._show_bars()
+                    self._show_tool_bar()
                 elif pos.y() >= top + 60:
-                    self._hide_bars()
+                    self._hide_tool_bar()
+
+                if pos.y() >= bottom - 5:
+                    self._show_info_bar()
+                elif pos.y() <= bottom - 35:
+                    self._hide_info_bar()
 
         return super().eventFilter(obj, event)

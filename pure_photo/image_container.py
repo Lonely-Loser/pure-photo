@@ -15,9 +15,13 @@ class ImageContainer(QWidget):
         self.view = ImageView(self.scene)
 
         self.toolbar = OverlayToolbar(self)
-        self.infoBar = ImageInfoBar(self)
+        self.imageInfoBar = ImageInfoBar(self)
 
         self.toolbar.hide()
+
+        self.view.zoomChanged.connect(
+            self.imageInfoBar.set_zoom
+        )
 
         self._setup_ui()
 
@@ -27,13 +31,12 @@ class ImageContainer(QWidget):
         layout.setSpacing(0)
 
         layout.addWidget(self.view)
-        layout.addWidget(self.infoBar)
 
-        self.toolbar.resize(
-            self.toolbar.sizeHint()
-        )
-
+        self.toolbar.resize(self.toolbar.sizeHint())
         self.toolbar.raise_()
+
+        self.imageInfoBar.resize(self.imageInfoBar.sizeHint())
+        self.imageInfoBar.raise_()
 
     def load_image(self, filename):
         success = self.scene.load_image(filename)
@@ -45,18 +48,28 @@ class ImageContainer(QWidget):
         if self.scene.image_info is None:
             return
 
-        self.infoBar.set_image_info(self.scene.image_info)
+        self.imageInfoBar.set_image_info(self.scene.image_info)
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
 
+        # Toolbar
         margin = 10
-
         x = (self.width() - self.toolbar.width()) // 2
-        y = margin
-
-        self.toolbar.move(x, y)
+        self.toolbar.move(x, margin)
         self.toolbar.raise_()
+
+        # Image Info Bar
+        x = 0
+        y = self.height() - self.imageInfoBar.height()
+        self.imageInfoBar.setGeometry(
+            x,
+            y,
+            self.width(),
+            self.imageInfoBar.height()
+        )
+
+        self.imageInfoBar.raise_()
 
     def connect_toolbar(self, viewer):
         self.toolbar.openRequested.connect(viewer.open_image)
@@ -71,6 +84,13 @@ class ImageContainer(QWidget):
 
     def hide_toolbar(self):
         self.toolbar.hide()
+
+    def show_image_info_bar(self):
+        self.imageInfoBar.show()
+        self.imageInfoBar.raise_()
+
+    def hide_image_info_bar(self):
+        self.imageInfoBar.hide()
 
     def zoom_in(self):
         self.view.zoom_in()

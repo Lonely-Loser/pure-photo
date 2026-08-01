@@ -42,12 +42,6 @@ OverlayToolbar {
     border-radius: 8px;
 }
 
-ImageInfoBar {
-    background: #140841;
-    border: 1px solid #0a4472;
-    border-radius: 8px;
-}
-
 QToolButton {
     background: transparent;
     color: aqua;
@@ -108,9 +102,7 @@ QLabel#titleIcon {
 QWidget#titleBar QPushButton {
     background: transparent;
     color: skyblue;
-
     border: none;
-
     min-width: 42px;
 }
 
@@ -127,12 +119,12 @@ QWidget#titleBar QPushButton:pressed {
 /* ------------------------------------------------ */
 
 QWidget#infoBar {
-    background-color: #0c274e;
-    border-bottom: 1px solid #0a4472;
+    background-color: #140841;
+    border-top: 1px solid #3a3a3a;
 }
 
-QLabel#infoBar {
+QLabel#infoLabel {
     color: skyblue;
-    font-size: 11pt;
+    font-size: 10pt;
     font-weight: 600;
 }

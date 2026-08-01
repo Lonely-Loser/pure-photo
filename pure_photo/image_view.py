@@ -1,4 +1,4 @@
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtCore import Qt, QTimer, Signal
 from PySide6.QtGui import QColor, QPainter, QCursor
 from PySide6.QtWidgets import (
     QFrame,
@@ -10,12 +10,12 @@ class ImageView(QGraphicsView):
     """
     Graphics view used to display and manipulate images.
     """
+    zoomChanged = Signal(int)
     def __init__(self, scene, parent=None):
         super().__init__(scene, parent)
 
         # Zoom settings
         self.zoom_factor = 1.15
-        self.zoom_level = 1.0
         self.min_zoom = 0.1
         self.max_zoom = 10.0
 
@@ -67,10 +67,7 @@ class ImageView(QGraphicsView):
             Qt.KeepAspectRatio
         )
 
-        self.zoom_level = (
-            self.transform()
-                .m11()
-        )
+        self._emit_zoom_changed()
 
     def center_image(self):
         """
@@ -83,28 +80,32 @@ class ImageView(QGraphicsView):
             self.scene().pixmap_item
         )
 
-    # ------------------------------------------------------------------
-    # Zoom
-    # ------------------------------------------------------------------
-
     def zoom_in(self):
-        if self.zoom_level >= self.max_zoom:
+        current_zoom = self.transform().m11()
+        if current_zoom >= self.max_zoom:
             return
 
-        self.zoom_level *= self.zoom_factor
         self.scale(self.zoom_factor, self.zoom_factor)
+        self._emit_zoom_changed()
 
     def zoom_out(self):
-        if self.zoom_level <= self.min_zoom:
+        current_zoom = self.transform().m11()
+        if current_zoom <= self.min_zoom:
             return
 
         factor = 1 / self.zoom_factor
-        self.zoom_level *= factor
         self.scale(factor, factor)
+        self._emit_zoom_changed()
 
     def reset_zoom(self):
-        self.zoom_level = 1.0
         self.resetTransform()
+        self._emit_zoom_changed()
+
+    def _emit_zoom_changed(self):
+        zoom = self.transform().m11()
+        zoom_percent = round(zoom * 100)
+
+        self.zoomChanged.emit(zoom_percent)
 
     # ------------------------------------------------------------------
     # Wheel zoom
