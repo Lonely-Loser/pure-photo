@@ -1,0 +1,138 @@
+QMainWindow {
+    background-color: #1e1e1e;
+}
+
+QStatusBar {
+    background: #2b2b2b;
+    color: #d0d0d0;
+}
+
+/* ------------------------------------------------ */
+/* QToolBar                                         */
+/* ------------------------------------------------ */
+
+QToolBar {
+    background: #140841;
+    border: none;
+    spacing: 6px;
+    padding: 4px;
+}
+
+QToolButton {
+    background: transparent;
+    color: aqua;
+    border-radius: 5px;
+    padding: 100px;
+}
+
+QToolButton:hover {
+    background: #5f5391;
+}
+
+QToolButton:pressed {
+    background: #423a63;
+}
+
+/* ------------------------------------------------ */
+/* Overlay Tool Bar                                  */
+/* ------------------------------------------------ */
+OverlayToolbar {
+    background: #140841;
+    border: 1px solid #0a4472;
+    border-radius: 8px;
+}
+
+ImageInfoBar {
+    background: #140841;
+    border: 1px solid #0a4472;
+    border-radius: 8px;
+}
+
+QToolButton {
+    background: transparent;
+    color: aqua;
+    border-radius: 5px;
+    padding: 6px;
+}
+
+QToolButton:hover {
+    background: #5f5391;
+    border-radius: 4px;
+}
+
+QToolButton:pressed {
+    background: #423a63;
+}
+
+/* ------------------------------------------------ */
+/* Menu Bar                                         */
+/* ------------------------------------------------ */
+
+QMenuBar {
+    background: #2b2b2b;
+    color: white;
+}
+
+QMenuBar::item:selected {
+    background: #3a3a3a;
+}
+
+QMenu {
+    background: #2b2b2b;
+    color: white;
+}
+
+QMenu::item:selected {
+    background: #444444;
+}
+
+/* ------------------------------------------------ */
+/* Title Bar                                        */
+/* ------------------------------------------------ */
+
+QWidget#titleBar {
+    background-color: #0c274e;
+    border-bottom: 1px solid #0a4472;
+}
+
+QLabel#titleLabel {
+    color: skyblue;
+    font-size: 11pt;
+    font-weight: 600;
+}
+
+QLabel#titleIcon {
+    background: transparent;
+}
+
+QWidget#titleBar QPushButton {
+    background: transparent;
+    color: skyblue;
+
+    border: none;
+
+    min-width: 42px;
+}
+
+QWidget#titleBar QPushButton:hover {
+    background: #075fa2;
+}
+
+QWidget#titleBar QPushButton:pressed {
+    background: #014880;
+}
+
+/* ------------------------------------------------ */
+/* Image Info Bar                                   */
+/* ------------------------------------------------ */
+
+QWidget#infoBar {
+    background-color: #0c274e;
+    border-bottom: 1px solid #0a4472;
+}
+
+QLabel#infoBar {
+    color: skyblue;
+    font-size: 11pt;
+    font-weight: 600;
+}
