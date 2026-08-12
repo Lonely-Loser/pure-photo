@@ -1,6 +1,7 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QLabel, QHBoxLayout
-from models.image_info import ImageInfo
+
+from pure_photo.models.image_info import ImageInfo
 
 
 class ImageInfoBar(QWidget):

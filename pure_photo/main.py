@@ -1,6 +1,8 @@
 import sys
 from PySide6.QtWidgets import QApplication
-from viewer import PhotoViewer
+from pure_photo.viewer import PhotoViewer
+
+from pure_photo.resource_path import resource_path
 
 
 def main():
@@ -15,8 +17,14 @@ def main():
     viewer.showMaximized()
     viewer.toggle_fullscreen()
 
-    with open("resources/styles/dark.css", encoding="utf-8") as f:
-        app.setStyleSheet(f.read())
+    # with open("resources/styles/dark.css", encoding="utf-8") as f:
+    #     app.setStyleSheet(f.read())
+
+    with open(
+            resource_path("resources", "styles", "dark.css"),
+            encoding="utf-8",
+    ) as f:
+        viewer.setStyleSheet(f.read())
 
     sys.exit(app.exec())
 

@@ -8,6 +8,8 @@ from PySide6.QtWidgets import (
     QSizePolicy,
 )
 
+from pure_photo.resource_path import resource_path
+
 
 class TitleBar(QWidget):
     def __init__(self, parent=None):
@@ -28,8 +30,14 @@ class TitleBar(QWidget):
         self.iconLabel.setObjectName("titleIcon")
         self.iconLabel.setFixedSize(20, 20)
 
+        path = resource_path(
+            "resources",
+            "icons",
+            "full-page-view-100.png"
+        )
+
         self.iconLabel.setPixmap(
-            QIcon("resources/icons/full-page-view-100.png").pixmap(18, 18)
+            QIcon(path).pixmap(18, 18)
         )
 
         self.titleLabel = QLabel("Pure Photo")

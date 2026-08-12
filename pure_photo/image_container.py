@@ -1,9 +1,9 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout
 
 from pure_photo.image_scene import ImageScene
-from image_view import ImageView
-from overlay_toolbar import OverlayToolbar
-from image_info_bar import ImageInfoBar
+from pure_photo.image_view import ImageView
+from pure_photo.overlay_toolbar import OverlayToolbar
+from pure_photo.image_info_bar import ImageInfoBar
 
 
 class ImageContainer(QWidget):

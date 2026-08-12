@@ -7,6 +7,8 @@ from PySide6.QtWidgets import (
     QSizePolicy,
 )
 
+from pure_photo.resource_path import resource_path
+
 
 class OverlayToolbar(QWidget):
     openRequested = Signal()
@@ -29,11 +31,13 @@ class OverlayToolbar(QWidget):
         layout.setContentsMargins(12, 3, 12, 3)
         layout.setSpacing(6)
 
-        self.openButton = self._create_button("resources/icons/opened-folder-100.png")
-        self.fullscreenButton = self._create_button("resources/icons/full-page-view-100.png")
-        self.zoomInButton = self._create_button("resources/icons/zoom-in-100.png")
-        self.zoomOutButton = self._create_button("resources/icons/zoom-out-100.png")
-        self.fitButton = self._create_button("resources/icons/zoom-to-fit-100.png")
+        ICON_DIR = ("resources", "icons")
+
+        self.openButton = self._create_button(resource_path(*ICON_DIR, "opened-folder-100.png"))
+        self.fullscreenButton = self._create_button(resource_path(*ICON_DIR, "full-page-view-100.png"))
+        self.zoomInButton = self._create_button(resource_path(*ICON_DIR, "zoom-in-100.png"))
+        self.zoomOutButton = self._create_button(resource_path(*ICON_DIR, "zoom-out-100.png"))
+        self.fitButton = self._create_button(resource_path(*ICON_DIR, "zoom-to-fit-100.png"))
 
         spacer = QWidget()
         spacer.setSizePolicy(

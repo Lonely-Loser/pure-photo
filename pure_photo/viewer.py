@@ -10,8 +10,8 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
 )
 
-from image_container import ImageContainer
-from title_bar import TitleBar
+from pure_photo.image_container import ImageContainer
+from pure_photo.title_bar import TitleBar
 
 
 class PhotoViewer(QMainWindow):
