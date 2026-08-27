@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from PySide6.QtCore import Qt, QRectF
-from PySide6.QtGui import QPixmap, QImage
+from PySide6.QtCore import Qt, QRectF, Signal
+from PySide6.QtGui import QPixmap, QImageReader
 from PySide6.QtWidgets import (
     QGraphicsPixmapItem,
     QGraphicsScene,
@@ -14,11 +14,15 @@ class ImageScene(QGraphicsScene):
     """
     Graphics scene responsible for managing the image.
     """
+
+    rotationChanged = Signal(float)
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.pixmap_item = None
         self.current_pixmap = None
         self.image_info = None
+        self.rotation = 0.0
 
     # ------------------------------------------------------------------
     # Image handling
@@ -31,17 +35,30 @@ class ImageScene(QGraphicsScene):
         Returns:
             bool: True if loading was successful.
         """
-        pixmap = QPixmap(filename)
 
-        if pixmap.isNull():
+        reader = QImageReader(filename)
+        reader.setAutoTransform(True)
+
+        image = reader.read()
+
+        if image.isNull():
             return False
+
+        pixmap = QPixmap.fromImage(image)
 
         self.clear()
         self.current_pixmap = pixmap
         self.pixmap_item = QGraphicsPixmapItem(self.current_pixmap)
 
+        # Rotate around the center of the image
+        self.pixmap_item.setTransformOriginPoint(
+            self.pixmap_item.boundingRect().center()
+        )
+
         # کیفیت بهتر هنگام بزرگنمایی
         self.pixmap_item.setTransformationMode(Qt.SmoothTransformation)
+
+        self.rotation = 0.0
         self.addItem(self.pixmap_item)
         self._update_scene_rect()
 
@@ -65,6 +82,46 @@ class ImageScene(QGraphicsScene):
         self.pixmap_item = None
         self.current_pixmap = None
         self.image_info = None
+        self.rotation = 0.0
+
+    # ------------------------------------------------------------------
+    # Rotation
+    # ------------------------------------------------------------------
+
+    def rotate_left(self):
+        """
+        Rotate the image 90 degrees counter-clockwise.
+        """
+        if not self.pixmap_item:
+            return
+
+        self.set_rotation(self.rotation - 90)
+
+    def rotate_right(self):
+        """
+        Rotate the image 90 degrees clockwise.
+        """
+        if not self.pixmap_item:
+            return
+
+        self.set_rotation(self.rotation + 90)
+
+    def set_rotation(self, angle):
+        """
+        Set an absolute rotation angle.
+        """
+        if not self.pixmap_item:
+            return
+
+        self.rotation = float(angle)
+        self.pixmap_item.setRotation(self.rotation)
+        self.rotationChanged.emit(self.rotation)
+
+    def reset_rotation(self):
+        """
+        Reset the image rotation to the default orientation.
+        """
+        self.set_rotation(0.0)
 
     # ------------------------------------------------------------------
     # Scene information

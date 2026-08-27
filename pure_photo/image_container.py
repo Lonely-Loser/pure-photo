@@ -74,9 +74,16 @@ class ImageContainer(QWidget):
     def connect_toolbar(self, viewer):
         self.toolbar.openRequested.connect(viewer.open_image)
         self.toolbar.fullscreenRequested.connect(viewer.toggle_fullscreen)
+
         self.toolbar.zoomInRequested.connect(self.view.zoom_in)
         self.toolbar.zoomOutRequested.connect(self.view.zoom_out)
         self.toolbar.fitRequested.connect(self.view.fit_image)
+
+        self.toolbar.rotateLeftRequested.connect(self.scene.rotate_left)
+        self.toolbar.rotateRightRequested.connect(self.scene.rotate_right)
+        self.toolbar.rotateResetRequested.connect(self.scene.reset_rotation)
+        self.toolbar.rotationAngleChanged.connect(self.scene.set_rotation)
+        self.scene.rotationChanged.connect(self.toolbar.set_rotation)
 
     def show_toolbar(self):
         self.toolbar.show()
