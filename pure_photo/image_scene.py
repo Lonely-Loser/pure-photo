@@ -15,6 +15,17 @@ class ImageScene(QGraphicsScene):
     Graphics scene responsible for managing the image.
     """
 
+    SUPPORTED_EXTENSIONS = {
+        ".png",
+        ".jpg",
+        ".jpeg",
+        ".bmp",
+        ".gif",
+        ".tif",
+        ".tiff",
+        ".webp",
+    }
+
     rotationChanged = Signal(float)
 
     def __init__(self, parent=None):
@@ -60,6 +71,8 @@ class ImageScene(QGraphicsScene):
 
         self.rotation = 0.0
         self.addItem(self.pixmap_item)
+        self.rotationChanged.emit(self.rotation)
+
         self._update_scene_rect()
 
         path = Path(filename)
@@ -83,6 +96,13 @@ class ImageScene(QGraphicsScene):
         self.current_pixmap = None
         self.image_info = None
         self.rotation = 0.0
+
+    @classmethod
+    def is_supported_image(cls, filename):
+        """
+        Check whether the file is a supported image.
+        """
+        return Path(filename).suffix.lower() in cls.SUPPORTED_EXTENSIONS
 
     # ------------------------------------------------------------------
     # Rotation

@@ -17,9 +17,6 @@ def main():
     viewer.showMaximized()
     viewer.toggle_fullscreen()
 
-    # with open("resources/styles/dark.css", encoding="utf-8") as f:
-    #     app.setStyleSheet(f.read())
-
     with open(
             resource_path("resources", "styles", "dark.css"),
             encoding="utf-8",

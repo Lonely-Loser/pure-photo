@@ -10,7 +10,9 @@ class ImageView(QGraphicsView):
     """
     Graphics view used to display and manipulate images.
     """
+
     zoomChanged = Signal(int)
+
     def __init__(self, scene, parent=None):
         super().__init__(scene, parent)
 

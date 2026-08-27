@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
 
 from pure_photo.image_container import ImageContainer
 from pure_photo.title_bar import TitleBar
+from pure_photo.image_scene import ImageScene
 
 
 class PhotoViewer(QMainWindow):
@@ -25,6 +26,8 @@ class PhotoViewer(QMainWindow):
         self._setup_window()
         self._build_ui()
         self._create_shortcuts()
+
+        self.setAcceptDrops(True)
 
     # ------------------------------------------------------------------
     # Initialization
@@ -79,27 +82,89 @@ class PhotoViewer(QMainWindow):
 
     def open_image(self):
         """
-        Open image file.
+        Open image file using a file dialog.
         """
         filename, _ = QFileDialog.getOpenFileName(
             self,
             "Open Image",
             "",
-            (
-                "Images "
-                "(*.png *.jpg *.jpeg *.bmp "
-                "*.gif *.tif *.tiff *.webp)"
-            )
+            self._image_file_filter(),
         )
 
         if not filename:
             return
 
-        if self.imageContainer.load_image(filename):
-            self.current_file = filename
-            file_name = Path(filename).name
-            self.setWindowTitle(f"{file_name} - Pure Photo")
-            self.imageContainer.fit_image()
+        self.open_image_file(filename)
+
+    def open_image_file(self, filename):
+        """
+        Open a specific image file.
+        """
+        if not self.imageContainer.load_image(filename):
+            return False
+
+        self.current_file = filename
+
+        file_name = Path(filename).name
+        self.setWindowTitle(f"{file_name} - Pure Photo")
+
+        self.imageContainer.fit_image()
+
+        return True
+
+    @staticmethod
+    def _image_file_filter():
+        """
+        Build the QFileDialog filter from supported image extensions.
+        """
+        extensions = " ".join(
+            f"*{extension}"
+            for extension in sorted(
+                ImageScene.SUPPORTED_EXTENSIONS
+            )
+        )
+
+        return f"Images ({extensions})"
+
+    # ------------------------------------------------------------------
+    # Drag & Drop
+    # ------------------------------------------------------------------
+
+    def _has_image_file(self, event):
+        """
+        Check whether a drag event contains at least one
+        supported local image file.
+        """
+        if not event.mimeData().hasUrls():
+            return False
+
+        for url in event.mimeData().urls():
+            if not url.isLocalFile():
+                continue
+
+            if ImageScene.is_supported_image(url.toLocalFile()):
+                return True
+
+        return False
+
+    def _open_dropped_image(self, event):
+        """
+        Open the first supported image file from a drop event.
+        """
+        if not event.mimeData().hasUrls():
+            return False
+
+        for url in event.mimeData().urls():
+            if not url.isLocalFile():
+                continue
+
+            filename = url.toLocalFile()
+
+            if ImageScene.is_supported_image(filename):
+                self.open_image_file(filename)
+                return True
+
+        return False
 
     # ------------------------------------------------------------------
     # Fullscreen
@@ -152,11 +217,42 @@ class PhotoViewer(QMainWindow):
         self.imageContainer.hide_image_info_bar()
 
     def eventFilter(self, obj, event):
+        # --------------------------------------------------------------
+        # Drag & Drop
+        # --------------------------------------------------------------
+        if event.type() == QEvent.Type.DragEnter:
+            if self._has_image_file(event):
+                event.acceptProposedAction()
+                return True
+
+            event.ignore()
+            return False
+
+        if event.type() == QEvent.Type.DragMove:
+            if self._has_image_file(event):
+                event.acceptProposedAction()
+                return True
+
+            event.ignore()
+            return False
+
+        if event.type() == QEvent.Type.Drop:
+            if self._open_dropped_image(event):
+                event.acceptProposedAction()
+                return True
+
+            event.ignore()
+            return False
+
+        # --------------------------------------------------------------
+        # Fullscreen hover
+        # --------------------------------------------------------------
         if self.is_fullscreen:
             if event.type() == QEvent.Type.MouseMove:
                 pos = QCursor.pos()
                 top = self.geometry().top()
                 bottom = self.geometry().bottom()
+
                 if pos.y() <= top + 5:
                     self._show_tool_bar()
                 elif pos.y() >= top + 60:
