@@ -44,7 +44,7 @@ class TitleBar(QWidget):
         self.titleLabel.setObjectName("titleLabel")
 
         self.minButton = QPushButton("—")
-        self.maxButton = QPushButton("□")
+        self.maxButton = QPushButton("❐")
         self.closeButton = QPushButton("✕")
 
         for button in (
@@ -86,6 +86,7 @@ class TitleBar(QWidget):
     def toggleMaximized(self):
         if self._parent.isMaximized():
             self._parent.showNormal()
+            self._parent.resize(800, 600)
             self.maxButton.setText("□")
         else:
             self._parent.showMaximized()

@@ -28,6 +28,11 @@ class ImageView(QGraphicsView):
         self.cursor_timer.setSingleShot(True)
         self.cursor_timer.timeout.connect(self.hide_cursor)
 
+        # Window drag settings
+        self._window_dragging = False
+        self._drag_start_position = None
+        self._window_start_position = None
+
         self._setup_view()
 
     # ------------------------------------------------------------------
@@ -143,9 +148,52 @@ class ImageView(QGraphicsView):
         self.viewport().setCursor(Qt.ArrowCursor)
         self.cursor_hidden = False
 
+    def mousePressEvent(self, event):
+        """
+        Start moving the window with the right mouse button.
+        """
+        if event.button() == Qt.RightButton:
+            self._window_dragging = True
+            self._drag_start_position = event.globalPosition().toPoint()
+            self._window_start_position = self.window().pos()
+
+            event.accept()
+            return
+
+        super().mousePressEvent(event)
+
     def mouseMoveEvent(self, event):
         """
-        Handle mouse movement.
+        Handle mouse movement and window dragging.
         """
         self.reset_cursor_timer()
+
+        if (
+            self._window_dragging
+            and event.buttons() & Qt.RightButton
+        ):
+            current_position = event.globalPosition().toPoint()
+            delta = current_position - self._drag_start_position
+
+            self.window().move(
+                self._window_start_position + delta
+            )
+
+            event.accept()
+            return
+
         super().mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        """
+        Stop moving the window.
+        """
+        if event.button() == Qt.RightButton:
+            self._window_dragging = False
+            self._drag_start_position = None
+            self._window_start_position = None
+
+            event.accept()
+            return
+
+        super().mouseReleaseEvent(event)

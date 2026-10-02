@@ -22,6 +22,9 @@ class PhotoViewer(QMainWindow):
         self.current_file = None
         self.is_fullscreen = False
         self.titleBar = None
+        self.is_resize_mode = False
+        self.hidden_bars = False
+        self.is_always_on_top = False
 
         self._setup_window()
         self._build_ui()
@@ -36,7 +39,7 @@ class PhotoViewer(QMainWindow):
         """Initialize main window."""
         self.setWindowTitle("Pure Photo")
         self.resize(1200, 800)
-        self.setMinimumSize(640, 480)
+        self.setMinimumSize(100, 100)
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
 
     def _build_ui(self):
@@ -66,15 +69,57 @@ class PhotoViewer(QMainWindow):
         self.shortcut_zoom_in = QShortcut(QKeySequence("+"), self)
         self.shortcut_zoom_in.activated.connect(self.imageContainer.zoom_in)
 
-        self.shortcut_zoom_out = QShortcut(
-            QKeySequence("-"), self
-        )
+        self.shortcut_zoom_out = QShortcut(QKeySequence("-"), self)
         self.shortcut_zoom_out.activated.connect(self.imageContainer.zoom_out)
 
-        self.shortcut_fit = QShortcut(
-            QKeySequence("Space"), self
-        )
+        self.shortcut_fit = QShortcut(QKeySequence("Space"), self)
         self.shortcut_fit.activated.connect(self.imageContainer.fit_image)
+
+        self.shortcut_resize_mode = QShortcut(QKeySequence("F11"), self)
+        self.shortcut_resize_mode.activated.connect(self.toggle_resize_mode)
+
+        self.shortcut_resize_mode = QShortcut(QKeySequence("H"), self)
+        self.shortcut_resize_mode.activated.connect(self.hide_bars)
+
+        self.shortcut_always_on_top = QShortcut(QKeySequence("T"), self)
+        self.shortcut_always_on_top.activated.connect(self.toggle_always_on_top)
+
+    # Window Resize Mode
+    def toggle_resize_mode(self):
+        if self.is_fullscreen:
+            return
+
+        self.is_resize_mode = not self.is_resize_mode
+
+        self.setWindowFlag(
+            Qt.WindowType.FramelessWindowHint,
+            not self.is_resize_mode
+        )
+
+        self.show()
+
+    def hide_bars(self):
+        if self.hidden_bars:
+            self.titleBar.show()
+            self.imageContainer.show_toolbar()
+            self.imageContainer.show_image_info_bar()
+        else:
+            self.titleBar.hide()
+            self.imageContainer.hide_toolbar()
+            self.imageContainer.hide_image_info_bar()
+
+        self.hidden_bars = not self.hidden_bars
+
+
+    def toggle_always_on_top(self):
+        self.is_always_on_top = not self.is_always_on_top
+
+        self.setWindowFlag(
+            Qt.WindowType.WindowStaysOnTopHint,
+            self.is_always_on_top
+        )
+
+        self.show()
 
     # ------------------------------------------------------------------
     # Image
